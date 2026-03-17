@@ -1,6 +1,8 @@
 # product-category-classification
 🇺🇸 English Version
 Amazon Sales - Total Revenue Prediction
+
+
 This project utilizes machine learning techniques to predict total sales revenue based on various product attributes. Using a dataset of 50,000 records, the model estimates financial outcomes with high precision.
 
 Project Objective
@@ -31,6 +33,8 @@ Error Analysis: Direct comparison between real and predicted values shows minima
 
 🇧🇷 Versão em Português
 Previsão de Receita de Vendas - Amazon Dataset
+
+
 Este projeto utiliza técnicas de aprendizado de máquina para prever a receita total de vendas com base em diversos atributos de produtos. Utilizando um dataset de 50.000 registros, o modelo estima resultados financeiros com alta precisão.
 
 Objetivo do Projeto
