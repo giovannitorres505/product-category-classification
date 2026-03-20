@@ -1,53 +1,52 @@
-# Revenue Classification - Amazon Sales Dataset
+# Product Category Classification - Amazon Sales Dataset
 
 ## Overview
 
-Binary classification model that predicts whether an Amazon order will generate **high or low revenue**, based on product characteristics available before the sale.
+Multiclass classification model that predicts the **product category** of an Amazon order based on its numerical features.
 
 ---
 
 ## Problem Statement
 
-Instead of predicting the exact revenue value (regression), this project frames the problem as a binary classification task:
+Given information about an order — such as price, discount, rating and review count — can a model correctly identify which product category it belongs to?
 
-- `1` = **High Revenue** — order total is above the dataset mean (~$657)
-- `0` = **Low Revenue** — order total is below the dataset mean
-
-This is useful in real business scenarios where a quick signal ("will this order be profitable?") is more actionable than an exact number.
+This is a challenging problem because numerical features alone do not strongly distinguish between categories. A book and a beauty product can have the same price, the same discount and the same rating. The model accuracy reflects this data limitation honestly.
 
 ---
 
 ## Dataset
 
-The dataset contains **50,000 Amazon orders** with product and customer information.
+The dataset contains **50,000 Amazon orders** across 6 product categories.
 
 | Column | Description |
 |---|---|
 | `price` | Original product price |
 | `discount_percent` | Discount percentage applied |
+| `quantity_sold` | Quantity sold per order |
 | `rating` | Product rating (1.0 to 5.0) |
 | `review_count` | Number of reviews |
-| `total_revenue` | Total revenue generated (used to create the target) |
+| `product_category` | Target — one of 6 categories |
+
+**Categories:** Books, Electronics, Fashion, Beauty, Sports, Home & Kitchen
 
 ---
 
 ## Features Used
 
-| Feature | Reason for inclusion |
+| Feature | Description |
 |---|---|
-| `price` | Higher price tends to influence revenue |
-| `discount_percent` | Discounts affect the final amount paid |
-| `rating` | Customer satisfaction may correlate with purchase volume |
-| `review_count` | Popularity indicator |
-
-**Note:** `quantity_sold` was intentionally excluded. Since `total_revenue = price * (1 - discount/100) * quantity_sold`, including it would allow the model to reconstruct the target mathematically, causing **data leakage** and artificially perfect results.
+| `price` | Original product price |
+| `discount_percent` | Discount percentage applied |
+| `quantity_sold` | Quantity sold |
+| `rating` | Product rating |
+| `review_count` | Number of reviews |
 
 ---
 
 ## Project Structure
 
 ```
-revenue-classification/
+product-category-classification/
 │
 ├── product_category_classification.ipynb   # Main notebook
 ├── amazon_sales_dataset.csv                # Dataset
@@ -58,42 +57,42 @@ revenue-classification/
 
 ## Methodology
 
-1. **Data loading and exploration** — overview of the dataset structure and statistics
+1. **Data loading and exploration** — overview of dataset structure and statistics
 2. **Data cleaning** — filling missing values
-3. **Target creation** — labeling orders as high (1) or low (0) revenue based on the mean
-4. **Class distribution check** — ensuring no severe class imbalance
+3. **Target distribution** — checking class balance across 6 categories
+4. **Feature distribution by category** — visualizing whether features differentiate categories
 5. **Train/test split** — 80% training, 20% testing with stratification
 6. **Model training** — RandomForestClassifier with 100 trees
-7. **Evaluation** — accuracy, precision, recall, F1-score, confusion matrix
+7. **Evaluation** — accuracy, classification report, confusion matrix
 8. **Feature importance** — identifying which variables most influence the prediction
 
 ---
 
 ## Algorithm
 
-**RandomForestClassifier** — builds 100 independent decision trees on random subsets of the data. The final prediction is the majority vote across all trees, making it more robust and less prone to overfitting than a single decision tree.
+**RandomForestClassifier** — builds 100 independent decision trees on random subsets of the data. The final prediction is the majority vote across all trees, making it more robust than a single decision tree.
 
 ---
 
 ## Results
 
-| Metric | Score |
-|---|---|
-| Accuracy | ~75.6% |
-| Precision | ~68.2% |
-| Recall | ~75.1% |
-| F1-Score | ~71.5% |
+Since there are 6 categories, a random baseline would score approximately **16.7%** (1 in 6 chance). Any accuracy above that indicates the model learned real patterns from the data.
 
-The model correctly classifies approximately 3 out of every 4 orders. The remaining errors are expected given that only 4 features are used, without direct access to quantity sold.
+The model accuracy is modest, which is expected given that numerical features do not strongly differentiate product categories.
 
 ---
 
 ## Key Findings
 
-- `price` is the most important feature for predicting revenue class
-- `discount_percent` has moderate influence on the classification
-- `rating` and `review_count` contribute less, suggesting that popularity alone does not determine revenue level
-- The model performs better on low revenue orders than high revenue orders
+- Price distributions overlap significantly across all 6 categories, confirming that price alone cannot identify a product category
+- The confusion matrix reveals which categories are most frequently confused with each other
+- A more accurate solution would require text-based features such as product descriptions, enabling NLP techniques to differentiate categories more effectively
+
+---
+
+## Limitations
+
+This project intentionally uses only numerical features to demonstrate a real-world data science challenge: **not every problem can be solved well with the available data**. Recognizing this limitation and documenting it honestly is an important part of the data science workflow.
 
 ---
 
