@@ -1,60 +1,115 @@
-# product-category-classification
-🇺🇸 English Version
-Amazon Sales - Total Revenue Prediction
+# Revenue Classification - Amazon Sales Dataset
 
+## Overview
 
-This project utilizes machine learning techniques to predict total sales revenue based on various product attributes. Using a dataset of 50,000 records, the model estimates financial outcomes with high precision.
+Binary classification model that predicts whether an Amazon order will generate **high or low revenue**, based on product characteristics available before the sale.
 
-Project Objective
-The goal is to develop a regression model capable of estimating total_revenue with high accuracy to support financial planning and sales strategy.
+---
 
-Methodology
+## Problem Statement
 
-Exploratory Data Analysis (EDA): Analyzed revenue distribution and correlations between numerical variables.
+Instead of predicting the exact revenue value (regression), this project frames the problem as a binary classification task:
 
-Algorithm: RandomForestRegressor.
+- `1` = **High Revenue** — order total is above the dataset mean (~$657)
+- `0` = **Low Revenue** — order total is below the dataset mean
 
-Features Used: price, discount_percent, quantity_sold, rating, and review_count.
+This is useful in real business scenarios where a quick signal ("will this order be profitable?") is more actionable than an exact number.
 
-Data Split: 80% of the data was used for training and 20% for testing.
+---
 
-Performance Metrics
-The model demonstrated exceptional performance on the test set:
+## Dataset
 
-R² Score: ~0.9999, indicating the model explains nearly all the variance in the data.
+The dataset contains **50,000 Amazon orders** with product and customer information.
 
-Feature Importance: price (52.3%) and quantity_sold (44.5%) are the primary drivers of revenue.
+| Column | Description |
+|---|---|
+| `price` | Original product price |
+| `discount_percent` | Discount percentage applied |
+| `rating` | Product rating (1.0 to 5.0) |
+| `review_count` | Number of reviews |
+| `total_revenue` | Total revenue generated (used to create the target) |
 
-Error Analysis: Direct comparison between real and predicted values shows minimal residual error.
+---
 
+## Features Used
 
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Feature | Reason for inclusion |
+|---|---|
+| `price` | Higher price tends to influence revenue |
+| `discount_percent` | Discounts affect the final amount paid |
+| `rating` | Customer satisfaction may correlate with purchase volume |
+| `review_count` | Popularity indicator |
 
+**Note:** `quantity_sold` was intentionally excluded. Since `total_revenue = price * (1 - discount/100) * quantity_sold`, including it would allow the model to reconstruct the target mathematically, causing **data leakage** and artificially perfect results.
 
-🇧🇷 Versão em Português
-Previsão de Receita de Vendas - Amazon Dataset
+---
 
+## Project Structure
 
-Este projeto utiliza técnicas de aprendizado de máquina para prever a receita total de vendas com base em diversos atributos de produtos. Utilizando um dataset de 50.000 registros, o modelo estima resultados financeiros com alta precisão.
+```
+revenue-classification/
+│
+├── product_category_classification.ipynb   # Main notebook
+├── amazon_sales_dataset.csv                # Dataset
+└── README.md
+```
 
-Objetivo do Projeto
-O objetivo é desenvolver um modelo de regressão capaz de estimar a total_revenue (receita total) com alta acurácia para apoiar o planejamento financeiro e a estratégia de vendas.
+---
 
-Metodologia
+## Methodology
 
-Análise Exploratória de Dados (EDA): Análise da distribuição da receita e correlações entre variáveis numéricas.
+1. **Data loading and exploration** — overview of the dataset structure and statistics
+2. **Data cleaning** — filling missing values
+3. **Target creation** — labeling orders as high (1) or low (0) revenue based on the mean
+4. **Class distribution check** — ensuring no severe class imbalance
+5. **Train/test split** — 80% training, 20% testing with stratification
+6. **Model training** — RandomForestClassifier with 100 trees
+7. **Evaluation** — accuracy, precision, recall, F1-score, confusion matrix
+8. **Feature importance** — identifying which variables most influence the prediction
 
-Algoritmo: RandomForestRegressor.
+---
 
-Atributos Utilizados: price (preço), discount_percent (percentual de desconto), quantity_sold (quantidade vendida), rating (nota) e review_count (contagem de avaliações).
+## Algorithm
 
-Divisão dos Dados: 80% dos dados para treinamento e 20% para teste.
+**RandomForestClassifier** — builds 100 independent decision trees on random subsets of the data. The final prediction is the majority vote across all trees, making it more robust and less prone to overfitting than a single decision tree.
 
-Métricas de Desempenho
-O modelo demonstrou um desempenho excepcional no conjunto de teste:
+---
 
-R² Score: ~0,9999, indicando que o modelo explica quase toda a variância dos dados.
+## Results
 
-Importância de Atributos: O preço (price - 52,3%) e a quantidade vendida (quantity_sold - 44,5%) são os principais influenciadores da receita.
+| Metric | Score |
+|---|---|
+| Accuracy | ~75.6% |
+| Precision | ~68.2% |
+| Recall | ~75.1% |
+| F1-Score | ~71.5% |
 
-Análise de Erro: A comparação direta entre os valores reais e as previsões mostra um erro residual mínimo.
+The model correctly classifies approximately 3 out of every 4 orders. The remaining errors are expected given that only 4 features are used, without direct access to quantity sold.
+
+---
+
+## Key Findings
+
+- `price` is the most important feature for predicting revenue class
+- `discount_percent` has moderate influence on the classification
+- `rating` and `review_count` contribute less, suggesting that popularity alone does not determine revenue level
+- The model performs better on low revenue orders than high revenue orders
+
+---
+
+## Technologies Used
+
+- Python 3
+- Pandas
+- Seaborn
+- Matplotlib
+- Scikit-learn
+
+---
+
+## How to Run
+
+1. Clone the repository
+2. Place `amazon_sales_dataset.csv` in the project folder
+3. Open `product_category_classification.ipynb` in Jupyter Notebook or Google Colab
+4. Run all cells in order
